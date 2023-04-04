@@ -3,3 +3,4 @@ obj/
 MyBudget.*
 *.txt
 .gitignore
+*.xml
