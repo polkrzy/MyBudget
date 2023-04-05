@@ -1,6 +1,9 @@
 bin/
 obj/
-MyBudget.*
 *.txt
 .gitignore
 *.xml
+MyBudget.layout
+MyBudget.cscope_file_list
+MyBudget.depend
+*.cbp
