@@ -3,9 +3,12 @@
 
 #include <ctime>
 #include <cstdlib>
+#include <iomanip>
 
 #include "IncomeFile.h"
 #include "ExpenseFile.h"
+#include "DateMenager.h"
+
 
 class BudgetMenager {
     const int LOGGED_USER_ID;
@@ -13,9 +16,6 @@ class BudgetMenager {
     vector <Expense> expenses;
     IncomeFile incomeFile;
     ExpenseFile expenseFile;
-
-    void sortIncomeCashOperationByDate(int firstDate, int lastDate);
-    void sortExpenseCashOperationByDate(int firstDate, int lastDate);
 
 public:
     BudgetMenager(int loggedUserId, string incomeFileName, string expenseFileName)
@@ -26,23 +26,18 @@ public:
 
     void addIncome();
     void addExpense();
-    void showIncomes(int firstDate, int lastDate);
-    void showExpenses(int firstDate, int lastDate);
+    void showBalanceSheetFromCurrentMonth();
+    void showBalanceSheetFromPreviousMonth();
+    void showBalanceSheetFromSelectedPeriod();
+    void showBalance(int startDate, int endDate);
 
-    void loadUserIncomes();
-    void loadUserExpenses();
     Income setNewIncomeData();
     Expense setNewExpenseData();
+    void loadUserIncomes();
+    void loadUserExpenses();
     int getNewIncomeId();
     int getNewExpenseId();
-    int getNewDate();
     int getLoggedUserId();
-    int getFirstDateOfCurrentMonth();
-    int getLastDateOfCurrentMonth();
-    int getFirstDateOfPreviousMonth();
-    int getLastDateOfPreviousMonth();
-
-
 };
 
 #endif

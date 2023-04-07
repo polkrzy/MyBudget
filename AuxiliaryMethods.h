@@ -5,14 +5,13 @@
 #include <sstream>
 #include <algorithm>
 #include <string>
+#include <cmath>
 
 using namespace std;
 
 class AuxiliaryMethods {
 public:
-    static bool isCorrectDateFormat(string date);
     static float formatCashAmount();
-
     static char enterChar();
     static string enterLine();
     static string replaceFirstLetterUppercaseAndOtherLowercase(string text);
@@ -20,8 +19,8 @@ public:
     static bool isAmountFormatCorrect(string amount);
     static string replaceComaWithPeriod(string amount);
     static float stringToFloatConversion(string number);
-    static int getMaxDayOfMonth(int month, int yaer);
-
+    static string floatToStringConvert(float amount);
+    static string intToStringConvert(int amount);
 };
 
 #endif

@@ -1,29 +1,12 @@
 #include "IncomeFile.h"
 
 int IncomeFile::getLastIncomeId() {
-    CMarkup xml;
-    lastIncomeId = 0;
-
-    if (xml.Load(getFileName())) {
-        xml.FindElem("Incomes");
-        xml.IntoElem();
-        while (xml.FindElem("Income")) {
-            //xml.OutOfElem();
-        }
-        xml.IntoElem();
-        xml.FindElem("IncomeId");
-
-        lastIncomeId = AuxiliaryMethods::stringToIntConversion(xml.GetData());
-    }
-
     return lastIncomeId;
 }
 
 vector <Income> IncomeFile::loadUserIncomes(const int ID_OF_LOGGED_USSER) {
     Income income;
     vector <Income> incomes;
-    CMarkup xml;
-
     lastIncomeId = 0;
 
     if (xml.Load(getFileName())) {
@@ -59,9 +42,8 @@ vector <Income> IncomeFile::loadUserIncomes(const int ID_OF_LOGGED_USSER) {
 }
 
 bool IncomeFile::addIncomeToFile(Income income) {
-    CMarkup xml;
-
     bool fileExist = xml.Load(getFileName());
+    string incomeAmountStr = AuxiliaryMethods::floatToStringConvert(income.getAmount());
 
     if(!fileExist) {
         xml.SetDoc("<?xml version=\"1.0\" encoding=\"UTF-8\"?>\r\n");
@@ -73,9 +55,9 @@ bool IncomeFile::addIncomeToFile(Income income) {
     xml.IntoElem();
     xml.AddElem("UserId", income.getUserId());
     xml.AddElem("IncomeId", income.getIncomeId());
-    xml.AddElem("IncomeDate", income.getIncomeDate());
+    xml.AddElem("IncomeDate", income.getIncomeDate()); //sformatowana??
     xml.AddElem("Item", income.getItem());
-    xml.AddElem("Amount", income.getAmount());
+    xml.AddElem("Amount", incomeAmountStr);
 
     xml.Save(getFileName());
 

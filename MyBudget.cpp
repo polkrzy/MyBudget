@@ -31,63 +31,21 @@ void MyBudget::addExpense() {
 }
 
 void MyBudget::showBalanceSheetFromCurrentMonth() {
-    int firstDateCurrentMonth, lastDateCurrentMonth;
-
     if (userMenager.isUserLogged()) {
-        firstDateCurrentMonth = budgetMenager->getFirstDateOfCurrentMonth();
-        lastDateCurrentMonth = budgetMenager->getLastDateOfCurrentMonth();
-
-        budgetMenager->showIncomes(firstDateCurrentMonth, lastDateCurrentMonth);
-        budgetMenager->showExpenses(firstDateCurrentMonth, lastDateCurrentMonth);
+        budgetMenager->showBalanceSheetFromCurrentMonth();
     }
 }
 
 void MyBudget::showBalanceSheetFromPreviousMonth() {
-    int firstDatePreviousMonth, lastDatePreviousMonth;
-
     if (userMenager.isUserLogged()) {
-        firstDatePreviousMonth = budgetMenager->getFirstDateOfPreviousMonth();
-        lastDatePreviousMonth = budgetMenager->getLastDateOfPreviousMonth();
-
-        budgetMenager->showIncomes(firstDatePreviousMonth, lastDatePreviousMonth);
-        budgetMenager->showExpenses(firstDatePreviousMonth, lastDatePreviousMonth);
+        budgetMenager->showBalanceSheetFromPreviousMonth();
     }
 }
 
 void MyBudget::showBalanceSheetFromSelectedPeriod() {
-    int firstDate, lastDate;
-    string firstDateStr, lastDateStr;
-    bool areCorrectDates = true;
-
-   do {
-   //     system("cls");
-        do {
-            system("cls");
-            cout << "Podaj od kiedy chcesz zobaczyc bilans (format <rrrr-mm-ss->): ";
-            firstDateStr = AuxiliaryMethods::enterLine();
-        } while (!AuxiliaryMethods::isCorrectDateFormat(firstDateStr));
-
-        firstDateStr.erase(7, 1);
-        firstDateStr.erase(4, 1);
-        firstDate = stoi(firstDateStr);
-
-        do {
-            system("cls");
-            cout << "Podaj do kiedy chcesz zobaczyc bilans (format <rrrr-mm-ss->): ";
-            lastDateStr = AuxiliaryMethods::enterLine();
-        } while (!AuxiliaryMethods::isCorrectDateFormat(lastDateStr));
-
-        lastDateStr.erase(7, 1);
-        lastDateStr.erase(4, 1);
-        lastDate = stoi(lastDateStr);
-
-        if (firstDate > lastDate) {
-            areCorrectDates = false;
-        }
-   } while (!areCorrectDates);
-
-    budgetMenager->showIncomes(firstDate, lastDate);
-    budgetMenager->showExpenses(firstDate, lastDate);
+    if (userMenager.isUserLogged()) {
+        budgetMenager->showBalanceSheetFromSelectedPeriod();
+    }
 }
 
 char MyBudget::selectOptionWithMainMenu() {

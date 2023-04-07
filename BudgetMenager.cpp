@@ -9,53 +9,111 @@ void BudgetMenager::loadUserExpenses() {
 }
 
 struct lesserIncome {
-    inline bool operator() (const Income first, const Income second) const {
+    inline bool operator() (Income first, Income second) const {
         return (first.getIncomeDate() < second.getIncomeDate());
     }
 };
 
 struct lesserExpense {
-    inline bool operator() (const Expense first, const Expense second) const {
+    inline bool operator() (Expense first, Expense second) const {
         return (first.getExpenseDate() < second.getExpenseDate());
     }
 };
 
-void BudgetMenager::sortIncomeCashOperationByDate(int firstDate, int lastDate) {
-    vector <Income> incomesFromDesignatedPeriod;
+void BudgetMenager::showBalance(int startDate, int endDate) {
+    string startDateStr, endDateStr;
+    float incomesSum = 0;
+    float expensesSum = 0;
+
+    startDateStr = DateMenager::transformStringDate(AuxiliaryMethods::intToStringConvert(startDate));
+    endDateStr = DateMenager::transformStringDate(AuxiliaryMethods::intToStringConvert(endDate));
+
+    sort(incomes.begin(), incomes.end(), lesserIncome());
+    sort(expenses.begin(), expenses.end(), lesserExpense());
+
+    cout << "--- WPLYWY Z OKRESU OD " << startDateStr << " DO " << endDateStr << " ---" << endl << endl;
 
     for (unsigned int i = 0; i < incomes.size(); i++) {
-        cout << incomes[i].getIncomeId() << endl;
+        if (incomes[i].getIncomeDate() >= startDate && incomes[i].getIncomeDate() <= endDate) {
+            incomesSum += incomes[i].getAmount();
 
-        if (incomes[i].getIncomeDate() >= firstDate && incomes[i].getIncomeDate() <= lastDate) {
-            incomesFromDesignatedPeriod.push_back(incomes[i]);
+            cout << "Data: " << incomes[i].getIncomeDate() << "          Nazwa przychodu: " << setw(20) << incomes[i].getItem()
+            << "          Wartosc: " << incomes[i].getAmount() << "zl" << endl;
         }
     }
 
-    sort(incomesFromDesignatedPeriod.begin(), incomesFromDesignatedPeriod.end(), lesserIncome());
-
-    for (unsigned int i = 0; i < incomesFromDesignatedPeriod.size(); i++) {
-        cout << incomesFromDesignatedPeriod[i].getIncomeDate() << endl;
+    if (incomesSum == 0) {
+            cout << "Brak wplywow w danym okresie" << endl;
     }
+    else {
+            cout << "Suma wplywow w danym okresie: " << incomesSum << "zl";
+    }
+/////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+    cout << endl << endl << "--- WYDATKI Z OKRESU OD " << startDateStr << " DO " << endDateStr << " ---" << endl << endl;
+
+    for (unsigned int i = 0; i < expenses.size(); i++) {
+        if (expenses[i].getExpenseDate() >= startDate && expenses[i].getExpenseDate() <= endDate) {
+            expensesSum += expenses[i].getAmount();
+
+            cout << "Data: " << expenses[i].getExpenseDate() << "          Nazwa przychodu: " << setw(20) << expenses[i].getItem()
+            << "          Wartosc: " << expenses[i].getAmount() << "zl" << endl;
+        }
+    }
+
+    if (expensesSum == 0) {
+            cout << "Brak wydatkow w danym okresie" << endl;
+    }
+    else {
+            cout << "Suma wydatkow w danym okresie: " << expensesSum << "zl";
+    }
+
+    cout << endl << endl << "Bilans laczny w danym okresie: " << incomesSum - expensesSum << "zl" << endl;
+
     system("pause");
 }
 
-void BudgetMenager::sortExpenseCashOperationByDate(int firstDate, int lastDate) {
-    vector <Expense> expensesFromDesignatedPeriod;
+void BudgetMenager::showBalanceSheetFromCurrentMonth() {
+    int startDateCurrentMonth, endDateCurrentMonth;
 
-    for (unsigned int i = 0; i < expenses.size(); i++) {
-        cout << expenses[i].getExpenseId() << endl;
+    startDateCurrentMonth = DateMenager::getStartDateOfCurrentMonth();
+    endDateCurrentMonth = DateMenager::getEndDateOfCurrentMonth();
 
-        if (expenses[i].getExpenseId() >= firstDate && expenses[i].getExpenseId() <= lastDate) {
-            expensesFromDesignatedPeriod.push_back(expenses[i]);
+    showBalance(startDateCurrentMonth, endDateCurrentMonth);
+}
+
+void BudgetMenager::showBalanceSheetFromPreviousMonth() {
+    int startDatePreviousMonth, endDatePreviousMonth;
+
+    startDatePreviousMonth = DateMenager::getStartDateOfPreviousMonth();
+    endDatePreviousMonth = DateMenager::getEndDateOfPreviousMonth();
+
+    showBalance(startDatePreviousMonth, endDatePreviousMonth);
+}
+
+void BudgetMenager::showBalanceSheetFromSelectedPeriod() {
+    int startDate, endDate;
+    bool isCorrectDate;
+
+    do {
+        system("cls");
+        cout << "Podaj od kiedy chcesz zobaczyc bilans (format <rrrr-mm-ss->): ";
+        startDate = DateMenager::enterDate();
+
+        cout << "Podaj do kiedy chcesz zobaczyc bilans (format <rrrr-mm-ss->): ";
+        endDate = DateMenager::enterDate();
+
+        if (startDate > endDate) {
+            isCorrectDate = false;
+            cout << "Data koncowa jest wczesniejsza niz poczatkowa" << endl;
+            system("pause");
         }
-    }
+        else {
+            isCorrectDate = true;
+        }
+    } while (!isCorrectDate);
 
-    sort(expensesFromDesignatedPeriod.begin(), expensesFromDesignatedPeriod.end(), lesserExpense());
-
-    for (unsigned int i = 0; i < expensesFromDesignatedPeriod.size(); i++) {
-        cout << expensesFromDesignatedPeriod[i].getExpenseId() << endl;
-    }
-    system("pause");
+    showBalance(startDate, endDate);
 }
 
 void BudgetMenager::addIncome() {
@@ -80,10 +138,10 @@ Income BudgetMenager::setNewIncomeData() {
     income.setUserId(LOGGED_USER_ID);
 
     cout << "Podaj dla jakiej daty wprowadzic dochod <1. Dziesiejsza 2. Inna>: ";
-    income.setIncomeDate(getNewDate());
+    income.setIncomeDate(DateMenager::getNewDate());
 
     cout << "Podaj rodzaj dochodu: ";
-    item = AuxiliaryMethods::enterLine();
+    item = AuxiliaryMethods::replaceFirstLetterUppercaseAndOtherLowercase(AuxiliaryMethods::enterLine());
     income.setItem(item);
 
     cout << "Podaj wartosc dochodu: ";
@@ -98,44 +156,6 @@ int BudgetMenager::getNewIncomeId() {
         return 1;
     else
         return incomeFile.getLastIncomeId() + 1;
-}
-
-int BudgetMenager::getNewDate() {
-    char choise;
-    bool isCorrectChoice;
-    int date;
-
-    do {
-        choise = AuxiliaryMethods::enterChar();
-
-        if (choise == '1') {
-            time_t t = time(nullptr);
-            tm* now = localtime(&t);
-            date = 10000 * (now->tm_year + 1900) + 100 * (now->tm_mon + 1) + now->tm_mday;
-            isCorrectChoice = true;
-        }
-        else if (choise == '2') {
-            string dateStr;
-
-            cout << "Podaj dokladna date w formacie rrrr-mm-dd: ";
-            do {
-                dateStr = AuxiliaryMethods::enterLine();
-                if (!AuxiliaryMethods::isCorrectDateFormat(dateStr)) {
-                    cout << "Zly format lub data. Wpisz ponownie: " << endl;
-                }
-            } while (!AuxiliaryMethods::isCorrectDateFormat(dateStr));
-            dateStr.erase(7, 1);
-            dateStr.erase(4, 1);
-            date = stoi(dateStr);
-            isCorrectChoice = true;
-        }
-        else {
-            cout << "Niepoprawny wybor. Podaj ponownie: ";
-            system("Pause");
-            isCorrectChoice = false;
-        }
-    } while(!isCorrectChoice);
-    return date;
 }
 
 void BudgetMenager::addExpense() {
@@ -160,10 +180,10 @@ Expense BudgetMenager::setNewExpenseData() {
     expense.setUserId(LOGGED_USER_ID);
 
     cout << "Podaj dla jakiej daty wprowadzic dochod <1. Dziesiejsza 2. Inna>: ";
-    expense.setExpenseDate(getNewDate());
+    expense.setExpenseDate(DateMenager::getNewDate());
 
     cout << "Podaj rodzaj dochodu: ";
-    item = AuxiliaryMethods::enterLine();;
+    item = AuxiliaryMethods::replaceFirstLetterUppercaseAndOtherLowercase(AuxiliaryMethods::enterLine());
     expense.setItem(item);
 
     cout << "Podaj wartosc dochodu: ";
@@ -180,91 +200,6 @@ int BudgetMenager::getNewExpenseId() {
     return expenseFile.getLastExpenseId() + 1;
 }
 
-void BudgetMenager::showIncomes(int firstDate, int lastDate) {
-    sortIncomeCashOperationByDate(firstDate, lastDate);
-}
-
-void BudgetMenager::showExpenses(int firstDate, int lastDate) {
-    sortExpenseCashOperationByDate(firstDate, lastDate);
-}
-
 int BudgetMenager::getLoggedUserId() {
     return LOGGED_USER_ID;
-}
-
-int BudgetMenager::getFirstDateOfCurrentMonth() {
-    int firstDateOfCurrentMonth;
-    const int FIRST_DAY = 1;
-
-    time_t t = time(nullptr);
-
-    tm* now = localtime(&t);
-    firstDateOfCurrentMonth = 10000 * (now->tm_year + 1900) + 100 * (now->tm_mon + 1) + FIRST_DAY;
-
-    return firstDateOfCurrentMonth;
-}
-
-int BudgetMenager::getLastDateOfCurrentMonth() {
-    int lastDateOfCurrentMonth, year, month, lastDay;
-    time_t t = time(nullptr);
-
-    tm* now = localtime(&t);
-    year = now->tm_year + 1900;
-    month = now->tm_mon + 1;
-
-    lastDay = AuxiliaryMethods::getMaxDayOfMonth(month, year);
-
-    lastDateOfCurrentMonth = 10000 * year + 100 * month + lastDay;
-
-    return lastDateOfCurrentMonth;
-}
-
-int BudgetMenager::getFirstDateOfPreviousMonth() {
-    int firstDateOfCurrentMonth, currentYear, currentMonth, previosMonth, year;
-    const int DECEMBER = 12;
-    const int FIRST_DAY = 1;
-    time_t t = time(nullptr);
-
-    tm* now = localtime(&t);
-    currentYear = now->tm_year + 1900;
-    currentMonth = now->tm_mon + 1;
-
-    if (currentMonth == 1) {
-        previosMonth = DECEMBER;
-        year = currentYear - 1;
-    }
-    else {
-        previosMonth = currentMonth - 1;
-        year = currentYear;
-    }
-
-    firstDateOfCurrentMonth = 10000 * year + 100 * previosMonth + FIRST_DAY;
-
-    return firstDateOfCurrentMonth;
-}
-
-int BudgetMenager::getLastDateOfPreviousMonth() {
-    int lastDateOfCurrentMonth, currentYear, currentMonth, lastDay, previosMonth, year;
-    const int DECEMBER = 12;
-    time_t t = time(nullptr);
-
-    tm* now = localtime(&t);
-    currentYear = now->tm_year + 1900;
-    currentMonth = now->tm_mon + 1;
-
-    if (currentMonth == 1) {
-        previosMonth = DECEMBER;
-        year = currentYear - 1;
-    }
-    else {
-        previosMonth = currentMonth - 1;
-        year = currentYear;
-    }
-
-    lastDay = AuxiliaryMethods::getMaxDayOfMonth(previosMonth, year);
-
-    lastDateOfCurrentMonth = 10000 * year + 100 * previosMonth + lastDay;
-
-
-    return lastDateOfCurrentMonth;
 }

@@ -10,6 +10,9 @@ using namespace std;
 class XmlFile {
     const string FILE_NAME;
 
+protected:
+    CMarkup xml;
+
 public:
     XmlFile(string fileName)
         : FILE_NAME(fileName) {};

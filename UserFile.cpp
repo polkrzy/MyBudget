@@ -1,8 +1,6 @@
 #include "UserFile.h"
 
 void UserFile::addUserToFile(User user) {
-    CMarkup xml;
-
     bool fileExist = xml.Load(getFileName());
 
     if(!fileExist) {
@@ -23,8 +21,6 @@ void UserFile::addUserToFile(User user) {
 }
 
 void UserFile::changeUserPasswordInFile(string newPassword, int loggedUserId) {
-    CMarkup xml;
-
     bool fileExist = xml.Load(getFileName());
 
     if(!fileExist) {
@@ -60,7 +56,6 @@ void UserFile::changeUserPasswordInFile(string newPassword, int loggedUserId) {
 vector <User> UserFile::loadUsersFromFile() {
     User user;
     vector <User> users;
-    CMarkup xml;
 
     if (xml.Load(getFileName())) {
         xml.FindElem("Users");

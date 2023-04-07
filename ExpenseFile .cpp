@@ -1,18 +1,6 @@
 #include "ExpenseFile.h"
 
 int ExpenseFile::getLastExpenseId() {
-    CMarkup xml;
-    xml.Load(getFileName());
-
-    xml.FindElem("Expenses");
-    xml.IntoElem();
-    while (xml.FindElem("Expense")) {
-        //xml.OutOfElem();
-    }
-    xml.IntoElem();
-    xml.FindElem("ExpenseId");
-    lastExpenseId = AuxiliaryMethods::stringToIntConversion(xml.GetData());
-
     return lastExpenseId;
 }
 
@@ -20,15 +8,14 @@ int ExpenseFile::getLastExpenseId() {
 vector <Expense> ExpenseFile::loadUserExpenses(const int ID_OF_LOGGED_USSER) {
     Expense expense;
     vector <Expense> expenses;
-    CMarkup xml;
+    lastExpenseId = 0;
 
     if (xml.Load(getFileName())) {
         xml.FindElem("Expenses");
         xml.IntoElem();
         while (xml.FindElem("Expense")) {
-
+            lastExpenseId++;
             xml.IntoElem();
-
             xml.FindElem("UserId");
 
             if (AuxiliaryMethods::stringToIntConversion(xml.GetData()) == ID_OF_LOGGED_USSER) {
@@ -56,9 +43,8 @@ vector <Expense> ExpenseFile::loadUserExpenses(const int ID_OF_LOGGED_USSER) {
 }
 
 bool ExpenseFile::addExpenseToFile(Expense expense) {
-    CMarkup xml;
-
     bool fileExist = xml.Load(getFileName());
+    string expenseAmountStr = AuxiliaryMethods::floatToStringConvert(expense.getAmount());
 
     if(!fileExist) {
         xml.SetDoc("<?xml version=\"1.0\" encoding=\"UTF-8\"?>\r\n");
@@ -72,7 +58,7 @@ bool ExpenseFile::addExpenseToFile(Expense expense) {
     xml.AddElem("ExpenseId", expense.getExpenseId());
     xml.AddElem("ExspenseDate", expense.getExpenseDate());
     xml.AddElem("Item", expense.getItem());
-    xml.AddElem("Amount", expense.getAmount());
+    xml.AddElem("Amount", expenseAmountStr);
 
     xml.Save(getFileName());
 

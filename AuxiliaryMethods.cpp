@@ -1,83 +1,5 @@
 #include "AuxiliaryMethods.h"
 
-bool AuxiliaryMethods::isCorrectDateFormat(string date) {
-    int number = 0;
-    int maxDay = 0;
-    int year, month, day, currentYear, currentMonth, currentDay;
-
-    for (int unsigned i = 0; i < date.length(); i++) {
-        number++;
-        if ((i == 4 || i == 7) && date[i] != '-' ) {
-            return false;
-        }
-    }
-
-    if (number != 10) {
-        return false;
-    }
-
-    year = stoi(date.substr(0, 4));
-    month = stoi(date.substr(5, 2));
-    day = stoi(date.substr(8, 2));
-
-    time_t t = time(nullptr);
-    tm* now = localtime(&t);
-    currentYear = now->tm_year + 1900;
-    currentMonth = now->tm_mon + 1;
-    currentDay = now->tm_mday;
-
-    if (year < 2000 || year > currentYear || month < 1 || month > 12) {
-        return false;
-    }
-
-    if (year == currentYear ) {
-        if (month > currentMonth) {
-            return false;
-        }
-        if (month == currentMonth && day > currentDay) {
-            return false;
-        }
-    }
-
-    maxDay = getMaxDayOfMonth(month, year);
-
-    if (day < 1 || day > maxDay) {
-        return false;
-    }
-    return true;
-}
-
-int AuxiliaryMethods::getMaxDayOfMonth(int month, int year) {
-    int maxDay;
-
-    switch (month) {
-        case 3:
-        case 5:
-        case 7:
-        case 8:
-        case 10:
-        case 12:
-            maxDay = 31;
-            break;
-        case 4:
-        case 6:
-        case 9:
-        case 11:
-            maxDay = 30;
-            break;
-        case 2:
-            if ((year % 4 == 0 && year % 100 != 0) || year % 400 == 0) {
-                maxDay = 29;
-            } else {
-                maxDay = 28;
-            }
-            break;
-        default:
-            break;
-    }
-    return maxDay;
-}
-
 float AuxiliaryMethods::formatCashAmount() {
     float result;
     string cashAmount;
@@ -87,7 +9,8 @@ float AuxiliaryMethods::formatCashAmount() {
         cashAmount = replaceComaWithPeriod(cashAmount);
     } while (!isAmountFormatCorrect(cashAmount));
 
-    result = stringToFloatConversion(cashAmount);
+    result = round(stringToFloatConversion(cashAmount) * 100) / 100;
+
     return result;
 }
 
@@ -123,8 +46,6 @@ string AuxiliaryMethods::replaceFirstLetterUppercaseAndOtherLowercase(string tex
     return text;
 }
 
-
-
 int AuxiliaryMethods::stringToIntConversion(string number) {
     int numberInt;
     istringstream iss(number);
@@ -134,8 +55,13 @@ int AuxiliaryMethods::stringToIntConversion(string number) {
 }
 
 bool AuxiliaryMethods::isAmountFormatCorrect(string amount) {
-    for(int unsigned i = 0; i < amount.length(); i++) {
-        if((amount[i] < '0' || amount[i] > '9') && (amount[i] != '.')) {
+    if (amount == "0") {
+        cout << "Wartosc nie moze wynosic 0. Sprobuj ponownie: ";
+        return false;
+    }
+
+    for (int unsigned i = 0; i < amount.length(); i++) {
+        if ((amount[i] < '0' || amount[i] > '9') && (amount[i] != '.')) {
             cout << "Wartosc niepoprawna. Sprobuj ponownie: ";
             return false;
         }
@@ -144,8 +70,8 @@ bool AuxiliaryMethods::isAmountFormatCorrect(string amount) {
 }
 
 string AuxiliaryMethods::replaceComaWithPeriod(string amount) {
-    for(int unsigned i = 0; i < amount.length(); i++) {
-        if(amount[i] == ',') {
+    for (int unsigned i = 0; i < amount.length(); i++) {
+        if (amount[i] == ',') {
             amount[i] = '.';
         }
     }
@@ -158,3 +84,16 @@ float AuxiliaryMethods::stringToFloatConversion(string number) {
     ss >> result;
     return result;
 }
+
+string AuxiliaryMethods::floatToStringConvert(float amount) {
+    ostringstream stream;
+    stream << amount;
+    return stream.str();
+}
+
+string AuxiliaryMethods::intToStringConvert(int input) {
+    ostringstream stream;
+    stream << input;
+    return stream.str();
+}
+
